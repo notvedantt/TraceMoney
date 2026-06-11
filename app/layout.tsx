@@ -8,8 +8,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Spendr — AI-Powered Personal Finance',
-  description: 'Every rupee, finally explained. Spendr connects all your UPI apps, cards and wallets.',
+  title: 'TraceMoney â€” AI-Powered Personal Finance',
+  description: 'Every rupee, finally explained. TraceMoney connects all your UPI apps, cards and wallets.',
 }
 
 export default function RootLayout({

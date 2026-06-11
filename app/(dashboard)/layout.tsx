@@ -26,7 +26,7 @@ export default function DashboardLayout({
     { href: '/transactions', label: 'Transactions', icon: ReceiptText },
     { href: '/analytics', label: 'Analytics', icon: BarChart2 },
     { href: '/budgets', label: 'Budgets', icon: Wallet },
-    { href: '/ask', label: 'Ask Spendr', icon: MessageCircle },
+    { href: '/ask', label: 'Ask TraceMoney', icon: MessageCircle },
   ]
   return (
     <div className="font-body-main text-body-main text-on-surface antialiased flex h-screen overflow-hidden bg-cream">
@@ -37,7 +37,7 @@ export default function DashboardLayout({
             <IndianRupee className="text-white w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-bold text-white text-xl">Spendr</h1>
+            <h1 className="font-bold text-white text-xl">TraceMoney</h1>
             <p className="text-xs text-navy-muted uppercase tracking-widest mt-1">AI Finance Tracker</p>
           </div>
         </div>

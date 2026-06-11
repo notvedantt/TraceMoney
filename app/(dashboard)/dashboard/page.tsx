@@ -23,7 +23,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Total Spent</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-3xl font-bold text-navy">₹42,318</h3>
+            <h3 className="text-3xl font-bold text-navy">â‚¹42,318</h3>
           </div>
           <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
             <TrendingUp className="w-4 h-4" />
@@ -34,7 +34,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Total Income</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-3xl font-bold text-navy">₹70,000</h3>
+            <h3 className="text-3xl font-bold text-navy">â‚¹70,000</h3>
           </div>
           <p className="text-gray-400 text-sm">Received May 1</p>
         </div>
@@ -44,7 +44,7 @@ export default function DashboardPage() {
           <div className="flex items-baseline gap-2 mb-1">
             <h3 className="text-xl font-bold text-navy">Food & Dining</h3>
           </div>
-          <p className="text-brand font-medium">₹12,450</p>
+          <p className="text-brand font-medium">â‚¹12,450</p>
         </div>
         {/* Savings Rate */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
@@ -52,7 +52,7 @@ export default function DashboardPage() {
           <div className="flex items-baseline gap-2 mb-1">
             <h3 className="text-3xl font-bold text-navy">39%</h3>
           </div>
-          <p className="text-green-600 font-medium">₹27,682 saved</p>
+          <p className="text-green-600 font-medium">â‚¹27,682 saved</p>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
                   <span className="text-sm text-gray-500 font-medium">Total</span>
-                  <span className="text-xl font-bold text-navy">₹42.3k</span>
+                  <span className="text-xl font-bold text-navy">â‚¹42.3k</span>
                 </div>
               </div>
               {/* Legend */}
@@ -122,10 +122,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-navy">Swiggy</p>
-                    <p className="text-sm text-gray-500">Food & Dining • Today</p>
+                    <p className="text-sm text-gray-500">Food & Dining â€¢ Today</p>
                   </div>
                 </div>
-                <span className="font-bold text-navy">-₹850</span>
+                <span className="font-bold text-navy">-â‚¹850</span>
               </div>
               <div className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
                 <div className="flex items-center gap-4">
@@ -134,10 +134,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-navy">Amazon</p>
-                    <p className="text-sm text-gray-500">Shopping • Yesterday</p>
+                    <p className="text-sm text-gray-500">Shopping â€¢ Yesterday</p>
                   </div>
                 </div>
-                <span className="font-bold text-navy">-₹2,499</span>
+                <span className="font-bold text-navy">-â‚¹2,499</span>
               </div>
               <div className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
                 <div className="flex items-center gap-4">
@@ -146,10 +146,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-navy">Salary</p>
-                    <p className="text-sm text-gray-500">Income • May 1</p>
+                    <p className="text-sm text-gray-500">Income â€¢ May 1</p>
                   </div>
                 </div>
-                <span className="font-bold text-green-600">+₹70,000</span>
+                <span className="font-bold text-green-600">+â‚¹70,000</span>
               </div>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             <div className="flex items-start gap-4 relative z-10">
               <Sparkles className="w-6 h-6 text-yellow-300 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-bold mb-2">Spendr Insight</h3>
+                <h3 className="text-lg font-bold mb-2">TraceMoney Insight</h3>
                 <p className="text-brand-light text-sm leading-relaxed mb-5">
                   You've spent 40% more on Food & Dining this month compared to your usual average. Consider reviewing your active subscriptions to offset this, as you have 2 unused services this month.
                 </p>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex justify-between items-end mb-2">
                   <p className="font-semibold text-navy">Food & Dining</p>
-                  <p className="text-sm text-gray-500"><span className="text-brand font-bold">83%</span> of ₹15,000</p>
+                  <p className="text-sm text-gray-500"><span className="text-brand font-bold">83%</span> of â‚¹15,000</p>
                 </div>
                 <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
                   <div className="h-full bg-brand rounded-full" style={{ width: '83%' }}></div>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex justify-between items-end mb-2">
                   <p className="font-semibold text-navy">Shopping</p>
-                  <p className="text-sm text-gray-500"><span className="text-red-500 font-bold">105%</span> of ₹8,000</p>
+                  <p className="text-sm text-gray-500"><span className="text-red-500 font-bold">105%</span> of â‚¹8,000</p>
                 </div>
                 <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
                   <div className="h-full bg-red-500 rounded-full" style={{ width: '100%' }}></div>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex justify-between items-end mb-2">
                   <p className="font-semibold text-navy">Transport</p>
-                  <p className="text-sm text-gray-500"><span className="text-green-600 font-bold">84%</span> of ₹5,000</p>
+                  <p className="text-sm text-gray-500"><span className="text-green-600 font-bold">84%</span> of â‚¹5,000</p>
                 </div>
                 <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
                   <div className="h-full bg-green-600 rounded-full" style={{ width: '84%' }}></div>
