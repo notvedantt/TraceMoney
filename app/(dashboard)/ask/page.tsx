@@ -70,7 +70,7 @@ export default function AskTraceMoneyPage() {
               </div>
               <div className="bg-white shadow-sm border border-cream-border rounded-2xl rounded-tl-sm p-5 md:p-6 flex flex-col gap-5 w-full">
                 <p className="font-medium text-navy leading-relaxed">
-                  You've spent <span className="font-bold">â‚¹42,318</span> so far this month. Here's the breakdown of your top categories:
+                  You've spent <span className="font-bold">₹42,318</span> so far this month. Here's the breakdown of your top categories:
                 </p>
                 {/* Bento/List Hybrid */}
                 <div className="flex flex-col gap-3">
@@ -85,7 +85,7 @@ export default function AskTraceMoneyPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-navy">â‚¹12,450</p>
+                      <p className="font-bold text-navy">₹12,450</p>
                       <div className="w-24 h-1.5 bg-cream rounded-full mt-1.5 overflow-hidden border border-cream-border/50">
                         <div className="h-full bg-orange-500 rounded-full" style={{ width: '80%' }}></div>
                       </div>
@@ -102,7 +102,7 @@ export default function AskTraceMoneyPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-navy">â‚¹8,200</p>
+                      <p className="font-bold text-navy">₹8,200</p>
                       <div className="w-24 h-1.5 bg-cream rounded-full mt-1.5 overflow-hidden border border-cream-border/50">
                         <div className="h-full bg-brand rounded-full" style={{ width: '50%' }}></div>
                       </div>
@@ -130,7 +130,7 @@ export default function AskTraceMoneyPage() {
               </div>
               <div className="bg-white shadow-sm border border-cream-border rounded-2xl rounded-tl-sm p-5 md:p-6 flex flex-col gap-5 w-full">
                 <p className="font-medium text-navy leading-relaxed">
-                  I found <span className="font-bold">7 active subscriptions</span> totaling <span className="font-bold text-brand">â‚¹2,391/month</span>.
+                  I found <span className="font-bold">7 active subscriptions</span> totaling <span className="font-bold text-brand">₹2,391/month</span>.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center justify-between p-3 rounded-xl border border-cream-border bg-cream/30">
@@ -138,28 +138,28 @@ export default function AskTraceMoneyPage() {
                       <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600 text-xs font-bold">N</div>
                       <span className="font-bold text-navy text-sm">Netflix</span>
                     </div>
-                    <span className="font-bold text-navy text-sm">â‚¹649</span>
+                    <span className="font-bold text-navy text-sm">₹649</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-xl border border-cream-border bg-cream/30">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 text-xs font-bold">A</div>
                       <span className="font-bold text-navy text-sm">Airtel</span>
                     </div>
-                    <span className="font-bold text-navy text-sm">â‚¹499</span>
+                    <span className="font-bold text-navy text-sm">₹499</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-xl border border-cream-border bg-cream/30">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">P</div>
                       <span className="font-bold text-navy text-sm">Prime</span>
                     </div>
-                    <span className="font-bold text-navy text-sm">â‚¹299</span>
+                    <span className="font-bold text-navy text-sm">₹299</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-xl border border-cream-border bg-cream/30">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold">S</div>
                       <span className="font-bold text-navy text-sm">Spotify</span>
                     </div>
-                    <span className="font-bold text-navy text-sm">â‚¹119</span>
+                    <span className="font-bold text-navy text-sm">₹119</span>
                   </div>
                 </div>
               </div>

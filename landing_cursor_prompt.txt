@@ -1,0 +1,487 @@
+Build a complete, production-ready landing page for Spendr — an AI-powered personal finance tracker for Indian users. This is a Next.js 14 app using Tailwind CSS. Create the file at `app/page.tsx`.
+
+---
+
+## EXACT DESIGN SPEC
+
+### Colours (add these to tailwind.config.js as custom colours)
+```js
+colors: {
+  navy: {
+    DEFAULT: '#0F2137',
+    light: '#172840',
+    muted: '#8FA3BB',
+  },
+  cream: {
+    DEFAULT: '#F8F5F0',
+    dark: '#F0EDE8',
+    border: '#E8E4DC',
+  },
+  brand: {
+    DEFAULT: '#2563EB',
+    light: '#EEF3FF',
+    hover: '#1D4ED8',
+  }
+}
+```
+
+### Fonts
+Import Inter from Google Fonts in `app/layout.tsx`. Use font-weight 400, 500, 600, 700.
+
+### Grain texture
+Add this CSS class in `app/globals.css`:
+```css
+.grain {
+  position: relative;
+}
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+.grain > * {
+  position: relative;
+  z-index: 1;
+}
+```
+
+---
+
+## PAGE STRUCTURE
+
+The page has 8 sections in this exact order:
+1. Navbar
+2. Hero (dark navy)
+3. Problem (cream)
+4. Product showcase (cream)
+5. Features (dark navy)
+6. How it works (cream)
+7. Security trust bar (white)
+8. CTA footer (dark navy)
+
+---
+
+## SECTION 1 — NAVBAR
+
+```tsx
+// Sticky, blur backdrop, white background at 80% opacity
+// Left: "Spendr" wordmark — font-size 20px, font-weight 700, color navy
+//        with a small ₹ icon in a blue square (28x28, rounded-md, bg-brand text-white) before the text
+// Right: "Sign in" ghost button (border navy, text navy) + "Try Demo" blue button
+// Height: 64px, border-bottom: 1px solid cream-border
+// On scroll: add subtle shadow
+```
+
+**Exact JSX structure:**
+```tsx
+<nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-cream-border">
+  <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    {/* Logo */}
+    <div className="flex items-center gap-2">
+      <div className="w-7 h-7 bg-brand rounded-md flex items-center justify-center text-white text-sm font-bold">₹</div>
+      <span className="text-navy font-bold text-lg tracking-tight">Spendr</span>
+    </div>
+    {/* Nav actions */}
+    <div className="flex items-center gap-3">
+      <button className="px-4 py-2 text-sm font-medium text-navy border border-navy rounded-lg hover:bg-cream transition-colors">
+        Sign in
+      </button>
+      <button className="px-4 py-2 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-hover transition-colors">
+        Try Demo
+      </button>
+    </div>
+  </div>
+</nav>
+```
+
+---
+
+## SECTION 2 — HERO
+
+Background: `bg-navy` (dark navy #0F2137), min-height 90vh, grain texture applied.
+
+**Layout:** Two column on desktop (text left, mockup right), single column on mobile.
+
+**Left side — text content:**
+```
+Small label above headline:
+  - Text: "AI-POWERED FINANCE TRACKER"
+  - Style: text-xs font-semibold tracking-widest text-brand uppercase mb-4
+
+Headline (h1):
+  - Line 1: "Every rupee,"
+  - Line 2: "finally explained."
+  - Style: text-6xl font-bold text-white leading-tight tracking-tight
+  - On mobile: text-4xl
+
+Subline:
+  - Text: "Spendr connects all your UPI apps, cards and wallets — and shows you exactly where your money went, in plain language."
+  - Style: text-lg text-navy-muted leading-relaxed max-w-md mt-6
+
+Buttons row (mt-8 flex gap-3):
+  - "Try the demo →" — bg-brand text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-hover
+  - "See how it works" — border border-white/40 text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10
+
+Trust line (mt-6):
+  - Text: "No bank credentials · RBI AA Framework · Free to try"
+  - Style: text-sm text-navy-muted flex items-center gap-2
+  - Add small shield icon (lucide) before text in text-brand
+```
+
+**Right side — product mockup card:**
+This is the most important visual element. Build it as actual JSX, not an image.
+
+```tsx
+// Outer wrapper: relative, slight rotation and elevation
+<div className="relative">
+  {/* Glow behind card */}
+  <div className="absolute inset-0 bg-brand/20 blur-3xl rounded-3xl scale-95" />
+  
+  {/* Main mockup card */}
+  <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-lg">
+    
+    {/* Mini top bar */}
+    <div className="bg-cream px-4 py-2 border-b border-cream-border flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+      <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+      <span className="text-xs text-gray-400 ml-2">spendr.app/dashboard</span>
+    </div>
+
+    {/* Mock dashboard content */}
+    <div className="flex">
+      {/* Mini sidebar */}
+      <div className="w-28 bg-navy p-3 flex flex-col gap-1">
+        <div className="text-white text-xs font-bold mb-3 px-1">Spendr</div>
+        {['Dashboard', 'Transactions', 'Analytics', 'Budgets'].map((item, i) => (
+          <div key={item} className={`text-xs px-2 py-1.5 rounded-md cursor-pointer ${i === 0 ? 'bg-white/20 text-white' : 'text-navy-muted hover:text-white'}`}>
+            {item}
+          </div>
+        ))}
+      </div>
+
+      {/* Main content area */}
+      <div className="flex-1 p-4 bg-cream">
+        {/* 4 metric cards */}
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {[
+            { label: 'Total Spent', value: '₹42,318', sub: '↑ 12% vs Apr', subColor: 'text-red-500' },
+            { label: 'Income', value: '₹70,000', sub: 'May 1', subColor: 'text-green-600' },
+            { label: 'Top Category', value: 'Food', sub: '₹12,450', subColor: 'text-brand' },
+            { label: 'Saved', value: '39%', sub: '₹27,682', subColor: 'text-green-600' },
+          ].map(card => (
+            <div key={card.label} className="bg-white rounded-lg p-2.5 border border-cream-border">
+              <div className="text-gray-400 text-[9px] font-medium uppercase tracking-wide">{card.label}</div>
+              <div className="text-navy font-bold text-sm mt-0.5">{card.value}</div>
+              <div className={`text-[9px] font-medium mt-0.5 ${card.subColor}`}>{card.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart placeholder + transactions */}
+        <div className="grid grid-cols-5 gap-2">
+          {/* Donut chart placeholder */}
+          <div className="col-span-2 bg-white rounded-lg p-3 border border-cream-border flex items-center justify-center">
+            <div className="relative w-16 h-16">
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#F0EDE8" strokeWidth="4"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#2563EB" strokeWidth="4" strokeDasharray="29 71"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#E8593C" strokeWidth="4" strokeDasharray="23 77" strokeDashoffset="-29"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#15803D" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="-52"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#D97706" strokeWidth="4" strokeDasharray="12 88" strokeDashoffset="-67"/>
+              </svg>
+            </div>
+          </div>
+          {/* Transaction list */}
+          <div className="col-span-3 bg-white rounded-lg border border-cream-border overflow-hidden">
+            <div className="text-[9px] font-semibold text-gray-400 px-3 py-2 border-b border-cream-border uppercase tracking-wide">Recent</div>
+            {[
+              { name: 'Swiggy', cat: 'Food', amt: '-₹342', color: 'bg-red-100 text-red-600' },
+              { name: 'Amazon', cat: 'Shopping', amt: '-₹1,299', color: 'bg-purple-100 text-purple-600' },
+              { name: 'Salary', cat: 'Income', amt: '+₹70k', color: 'bg-green-100 text-green-600' },
+              { name: 'Uber', cat: 'Transport', amt: '-₹180', color: 'bg-blue-100 text-blue-600' },
+            ].map(tx => (
+              <div key={tx.name} className="flex items-center justify-between px-3 py-1.5 border-b border-cream-border last:border-0">
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-medium ${tx.color}`}>{tx.cat}</span>
+                  <span className="text-[10px] font-medium text-navy">{tx.name}</span>
+                </div>
+                <span className={`text-[10px] font-bold ${tx.amt.startsWith('+') ? 'text-green-600' : 'text-red-500'}`}>{tx.amt}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* AI Insight strip */}
+        <div className="mt-2 bg-white rounded-lg border-l-2 border-brand border border-cream-border p-2.5">
+          <div className="flex items-start gap-1.5">
+            <span className="text-brand text-xs">✦</span>
+            <p className="text-[9px] text-gray-500 leading-relaxed">You spent <strong className="text-navy">₹4,200 more</strong> on food this month. Your 5 subscriptions total <strong className="text-navy">₹2,391/mo</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## SECTION 3 — PROBLEM ("Sound familiar?")
+
+Background: `bg-cream grain` section, py-24.
+
+```tsx
+// Section label
+<p className="text-xs font-semibold tracking-widest text-brand uppercase text-center mb-4">THE PROBLEM</p>
+
+// Heading
+<h2 className="text-4xl font-bold text-navy text-center tracking-tight mb-4">Sound familiar?</h2>
+
+// Subline
+<p className="text-gray-500 text-center max-w-xl mx-auto mb-14">Managing money across multiple apps is chaotic. No single view. No plain language. You only find out at month end.</p>
+
+// 3 cards grid — grid-cols-3 gap-6
+// Each card: bg-white rounded-2xl p-7 border border-cream-border shadow-sm hover:shadow-md transition-shadow
+```
+
+**3 cards exactly:**
+```tsx
+const problems = [
+  {
+    icon: <ArrowLeftRight className="w-5 h-5 text-brand" />,
+    title: "Scattered across 6 apps",
+    desc: "GPay, PhonePe, Paytm, HDFC, Amazon Pay, Paytm — every app has a piece of your spending story, but none has the full picture."
+  },
+  {
+    icon: <FileQuestion className="w-5 h-5 text-brand" />,
+    title: "No plain language",
+    desc: "Raw codes like UPI/SWIGGY*388389 and POS/MCDONALDS*7834 tell you nothing. You can't track what you can't read."
+  },
+  {
+    icon: <Clock className="w-5 h-5 text-brand" />,
+    title: "You check too late",
+    desc: "By the time you open your bank app at month end, the damage is done. Budgeting after spending isn't budgeting."
+  },
+]
+
+// Each card renders:
+<div className="bg-white rounded-2xl p-7 border border-cream-border shadow-sm hover:shadow-md transition-shadow">
+  <div className="w-10 h-10 bg-brand-light rounded-xl flex items-center justify-center mb-5">
+    {problem.icon}
+  </div>
+  <h3 className="text-navy font-semibold text-lg mb-2">{problem.title}</h3>
+  <p className="text-gray-500 text-sm leading-relaxed">{problem.desc}</p>
+</div>
+```
+
+---
+
+## SECTION 4 — PRODUCT SHOWCASE ("One dashboard for all your money")
+
+Background: `bg-cream grain`, py-24, border-top 1px solid cream-border.
+
+```tsx
+// Label + heading centred
+<p className="text-xs font-semibold tracking-widest text-brand uppercase text-center mb-4">THE PRODUCT</p>
+<h2 className="text-4xl font-bold text-navy text-center tracking-tight mb-4">One dashboard for all your money</h2>
+<p className="text-gray-500 text-center max-w-xl mx-auto mb-14">Everything in one place, labelled in plain English. No more guessing where it went.</p>
+
+// Large mockup card — this is the FULL dashboard mockup, larger version of the hero mockup
+// max-w-4xl mx-auto, same structure as hero mockup but:
+// - Full sidebar with all 5 nav items
+// - 4 metric cards all showing
+// - Larger donut chart with visible legend
+// - 6 transaction rows
+// - AI insight card visible
+// Wrap in: bg-white rounded-3xl shadow-2xl border border-cream-border overflow-hidden
+// Add a browser chrome bar at the top (same macOS dots + URL bar style)
+```
+
+---
+
+## SECTION 5 — FEATURES ("Built for how Indians actually spend")
+
+Background: `bg-navy grain`, py-24.
+
+```tsx
+// Label
+<p className="text-xs font-semibold tracking-widest text-blue-400 uppercase text-center mb-4">FEATURES</p>
+
+// Heading
+<h2 className="text-4xl font-bold text-white text-center tracking-tight mb-4">Built for how Indians actually spend</h2>
+<p className="text-navy-muted text-center max-w-xl mx-auto mb-14">From UPI to credit cards — we understand the Indian payment landscape.</p>
+
+// 4 cards grid (2x2)
+// Card style: bg-navy-light rounded-2xl p-7 border border-white/10 hover:border-brand/50 transition-colors
+```
+
+**4 feature cards:**
+```tsx
+const features = [
+  {
+    icon: <Zap className="w-5 h-5 text-brand" />,
+    title: "Unified view",
+    desc: "Every transaction from every source — GPay, PhonePe, HDFC, Paytm — in a single clean feed."
+  },
+  {
+    icon: <Sparkles className="w-5 h-5 text-brand" />,
+    title: "AI categorisation",
+    desc: "Raw codes like UPI/SWIGGY*388389 become 'Food delivery · Swiggy · ₹342' automatically."
+  },
+  {
+    icon: <MessageCircle className="w-5 h-5 text-brand" />,
+    title: "Ask anything",
+    desc: "Type 'how much did I spend on food this month?' — get a plain rupee answer in seconds."
+  },
+  {
+    icon: <RefreshCw className="w-5 h-5 text-brand" />,
+    title: "Subscription tracker",
+    desc: "See every recurring charge, total monthly burn, and next charge date — all in one place."
+  },
+]
+
+// Each card:
+<div className="bg-navy-light rounded-2xl p-7 border border-white/10 hover:border-brand/50 transition-colors">
+  <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center mb-5 border border-brand/20">
+    {feature.icon}
+  </div>
+  <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
+  <p className="text-navy-muted text-sm leading-relaxed">{feature.desc}</p>
+</div>
+```
+
+---
+
+## SECTION 6 — HOW IT WORKS
+
+Background: `bg-cream grain`, py-24.
+
+```tsx
+// Label + heading
+<p className="text-xs font-semibold tracking-widest text-brand uppercase text-center mb-4">HOW IT WORKS</p>
+<h2 className="text-4xl font-bold text-navy text-center tracking-tight mb-4">Three steps, then you're done</h2>
+<p className="text-gray-500 text-center max-w-xl mx-auto mb-16">Get set up in under 2 minutes. No bank passwords, ever.</p>
+
+// 3 steps — grid-cols-3 gap-8, with a dashed line connecting them
+// Wrapper: relative
+// Dashed line: absolute top-8 left-1/6 right-1/6 h-px border-t-2 border-dashed border-cream-border z-0
+```
+
+**3 steps:**
+```tsx
+const steps = [
+  {
+    number: "1",
+    title: "Connect your accounts",
+    desc: "Securely link via RBI's Account Aggregator framework. Takes 30 seconds. No bank password needed."
+  },
+  {
+    number: "2",
+    title: "We categorise everything",
+    desc: "AI reads every transaction and labels it in plain English. Swiggy, Zomato, Amazon — all sorted automatically."
+  },
+  {
+    number: "3",
+    title: "Ask anything",
+    desc: "Beautiful dashboard, plain language answers, and WhatsApp access. Your money, finally clear."
+  },
+]
+
+// Each step:
+<div className="flex flex-col items-center text-center relative z-10">
+  <div className="w-14 h-14 rounded-full bg-navy flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg">
+    {step.number}
+  </div>
+  <h3 className="text-navy font-semibold text-lg mb-2">{step.title}</h3>
+  <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{step.desc}</p>
+</div>
+```
+
+---
+
+## SECTION 7 — SECURITY TRUST BAR
+
+Background: `bg-white`, py-8, border-y border-cream-border.
+
+```tsx
+<section className="bg-white border-y border-cream-border py-8">
+  <div className="max-w-4xl mx-auto px-6">
+    <div className="flex items-center justify-center gap-0 divide-x divide-cream-border">
+      {[
+        { icon: <Shield className="w-4 h-4 text-brand" />, label: "RBI AA Framework", desc: "Compliant & secure" },
+        { icon: <Lock className="w-4 h-4 text-brand" />, label: "No bank credentials", desc: "We never store passwords" },
+        { icon: <CheckCircle className="w-4 h-4 text-brand" />, label: "Consent-based access", desc: "You control your data" },
+      ].map(item => (
+        <div key={item.label} className="flex items-center gap-3 px-10 py-2">
+          <div className="w-8 h-8 bg-brand-light rounded-lg flex items-center justify-center flex-shrink-0">
+            {item.icon}
+          </div>
+          <div>
+            <p className="text-navy font-semibold text-sm">{item.label}</p>
+            <p className="text-gray-400 text-xs">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+```
+
+---
+
+## SECTION 8 — CTA FOOTER
+
+Background: `bg-navy grain`, py-24.
+
+```tsx
+<section className="bg-navy grain py-24">
+  <div className="max-w-3xl mx-auto px-6 text-center">
+    <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
+      Ready to see where your money goes?
+    </h2>
+    <p className="text-navy-muted text-lg mb-10">
+      Join thousands of Indians who finally understand their spending.
+    </p>
+    <button className="px-8 py-4 bg-brand text-white font-semibold text-lg rounded-xl hover:bg-brand-hover transition-colors shadow-lg shadow-brand/30">
+      Try the demo →
+    </button>
+    <p className="text-navy-muted text-sm mt-4">Takes 30 seconds · No credit card required</p>
+  </div>
+  
+  {/* Footer bottom */}
+  <div className="max-w-6xl mx-auto px-6 mt-20 pt-8 border-t border-white/10 flex items-center justify-between">
+    <div className="flex items-center gap-2">
+      <div className="w-6 h-6 bg-brand rounded-md flex items-center justify-center text-white text-xs font-bold">₹</div>
+      <span className="text-white font-semibold text-sm">Spendr</span>
+    </div>
+    <p className="text-navy-muted text-xs">© 2026 Spendr Technologies</p>
+    <div className="flex gap-6 text-navy-muted text-xs">
+      <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+      <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</section>
+```
+
+---
+
+## FINAL INSTRUCTIONS
+
+1. Put everything in `app/page.tsx` as a single React component with `'use client'` at top
+2. Import lucide-react icons: `import { ArrowLeftRight, FileQuestion, Clock, Zap, Sparkles, MessageCircle, RefreshCw, Shield, Lock, CheckCircle } from 'lucide-react'`
+3. Add all custom colours to `tailwind.config.js` exactly as specified above
+4. Add the `.grain` CSS class to `app/globals.css` exactly as specified above
+5. Make it fully responsive — on mobile (< 768px):
+   - Hero: single column, mockup below text, mockup scale 0.85
+   - Problem/Features: single column grid
+   - How it works: single column, hide the dashed connecting line
+   - Trust bar: single column stack
+6. No animations except hover transitions (150ms ease)
+7. No external dependencies beyond lucide-react and tailwind
+8. Run `npm run dev` — it should compile with zero errors
+
+Build the complete file now.

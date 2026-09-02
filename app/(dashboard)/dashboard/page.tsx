@@ -1,20 +1,117 @@
+import { createClient } from '@/lib/supabase/server'
 import {
   TrendingUp,
-  Restaurant,
+  Sparkles,
+  Utensils,
   ShoppingBag,
-  Payments,
-  Sparkles
+  Banknote,
+  Car,
+  Smartphone,
+  Film,
+  Pill,
+  Lightbulb,
+  ShoppingCart,
+  Plane,
+  Book,
+  Send,
+  Package
 } from 'lucide-react'
 
-// Map material symbols to Lucide roughly:
-// restaurant -> Utensils
-// shopping_bag -> ShoppingBag
-// payments -> IndianRupee or Banknote
-// spark -> Sparkles
+// Helper to map category emoji to Lucide icon
+function getCategoryIcon(iconStr: string, className: string = "w-5 h-5") {
+  switch (iconStr) {
+    case '🍔': return <Utensils className={className} />
+    case '🚗': return <Car className={className} />
+    case '🛍️': return <ShoppingBag className={className} />
+    case '📱': return <Smartphone className={className} />
+    case '🎬': return <Film className={className} />
+    case '💊': return <Pill className={className} />
+    case '💡': return <Lightbulb className={className} />
+    case '🛒': return <ShoppingCart className={className} />
+    case '✈️': return <Plane className={className} />
+    case '📚': return <Book className={className} />
+    case '💸': return <Send className={className} />
+    default: return <Package className={className} />
+  }
+}
 
-import { Utensils, Banknote } from 'lucide-react'
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(amount)
+}
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return null
+
+  // Calculate start of current month
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+
+  // 1. Fetch all transactions for the current month to calculate totals
+  const { data: currentMonthTxns } = await supabase
+    .from('transactions')
+    .select('amount, type, category_id, merchant, date, categories(name, color, icon)')
+    .eq('user_id', user.id)
+    .gte('date', startOfMonth)
+
+  let totalSpent = 0
+  let totalIncome = 0
+  const categoryTotals: Record<number, { name: string, color: string, total: number }> = {}
+
+  currentMonthTxns?.forEach(t => {
+    if (t.type === 'debit') {
+      totalSpent += Number(t.amount)
+      
+      // Calculate category breakdown
+      if (t.categories) {
+        if (!categoryTotals[t.category_id]) {
+          categoryTotals[t.category_id] = { name: t.categories.name as string, color: t.categories.color as string, total: 0 }
+        }
+        categoryTotals[t.category_id].total += Number(t.amount)
+      }
+    } else {
+      totalIncome += Number(t.amount)
+    }
+  })
+
+  const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalSpent) / totalIncome) * 100) : 0
+  const savingsAmount = totalIncome - totalSpent
+
+  const sortedCategories = Object.values(categoryTotals).sort((a, b) => b.total - a.total)
+  const topCategory = sortedCategories.length > 0 ? sortedCategories[0] : null
+
+  // 2. Fetch Recent Transactions
+  const { data: recentTransactions } = await supabase
+    .from('transactions')
+    .select('id, amount, type, merchant, date, categories(name, color, icon)')
+    .eq('user_id', user.id)
+    .order('date', { ascending: false })
+    .limit(4)
+
+  // 3. Fetch Budgets
+  const { data: budgets } = await supabase
+    .from('budgets')
+    .select('id, amount, category_id, categories(name, color)')
+    .eq('user_id', user.id)
+    .gte('month', startOfMonth)
+
+  // 4. Fetch Insights
+  const { data: insight } = await supabase
+    .from('insights')
+    .select('content')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  const insightText = insight?.content || "You're doing great! Try to keep your food expenses under control this week."
+
   return (
     <>
       {/* Summary Cards Row */}
@@ -23,36 +120,38 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Total Spent</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-3xl font-bold text-navy">â‚¹42,318</h3>
+            <h3 className="text-3xl font-bold text-navy">{formatCurrency(totalSpent)}</h3>
           </div>
-          <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
+          <div className="flex items-center gap-1 text-gray-500 text-sm font-medium">
             <TrendingUp className="w-4 h-4" />
-            <span>12% from last month</span>
+            <span>This month</span>
           </div>
         </div>
         {/* Total Income */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Total Income</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-3xl font-bold text-navy">â‚¹70,000</h3>
+            <h3 className="text-3xl font-bold text-navy">{formatCurrency(totalIncome)}</h3>
           </div>
-          <p className="text-gray-400 text-sm">Received May 1</p>
+          <p className="text-gray-400 text-sm">This month</p>
         </div>
         {/* Top Category */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Top Category</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-xl font-bold text-navy">Food & Dining</h3>
+            <h3 className="text-xl font-bold text-navy">{topCategory?.name || 'None'}</h3>
           </div>
-          <p className="text-brand font-medium">â‚¹12,450</p>
+          <p className="text-brand font-medium">{topCategory ? formatCurrency(topCategory.total) : '₹0'}</p>
         </div>
         {/* Savings Rate */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border hover:shadow-md transition-shadow">
           <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">Savings Rate</p>
           <div className="flex items-baseline gap-2 mb-1">
-            <h3 className="text-3xl font-bold text-navy">39%</h3>
+            <h3 className="text-3xl font-bold text-navy">{savingsRate}%</h3>
           </div>
-          <p className="text-green-600 font-medium">â‚¹27,682 saved</p>
+          <p className={savingsAmount >= 0 ? "text-green-600 font-medium" : "text-red-500 font-medium"}>
+            {formatCurrency(savingsAmount)} saved
+          </p>
         </div>
       </div>
 
@@ -64,49 +163,59 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border">
             <h3 className="text-xl font-bold text-navy mb-6">Spending by category</h3>
             <div className="flex flex-col md:flex-row items-center gap-8">
-              {/* Donut Chart Placeholder */}
+              {/* Donut Chart Data representation */}
               <div className="relative w-48 h-48 flex-shrink-0">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" fill="transparent" r="40" stroke="#F0EDE8" strokeWidth="16"></circle>
-                  {/* Food & Dining 29% */}
-                  <circle className="transition-all hover:stroke-[20px] cursor-pointer" cx="50" cy="50" fill="transparent" r="40" stroke="#2563eb" strokeDasharray="72.8 251.2" strokeDashoffset="0" strokeWidth="16"></circle>
-                  {/* Shopping 23% */}
-                  <circle className="transition-all hover:stroke-[20px] cursor-pointer" cx="50" cy="50" fill="transparent" r="40" stroke="#E8593C" strokeDasharray="57.8 251.2" strokeDashoffset="-72.8" strokeWidth="16"></circle>
-                  {/* Transport 15% */}
-                  <circle className="transition-all hover:stroke-[20px] cursor-pointer" cx="50" cy="50" fill="transparent" r="40" stroke="#15803D" strokeDasharray="37.6 251.2" strokeDashoffset="-130.6" strokeWidth="16"></circle>
-                  {/* Bills 33% */}
-                  <circle className="transition-all hover:stroke-[20px] cursor-pointer" cx="50" cy="50" fill="transparent" r="40" stroke="#D97706" strokeDasharray="83 251.2" strokeDashoffset="-168.2" strokeWidth="16"></circle>
+                  
+                  {sortedCategories.length > 0 && (() => {
+                    let currentOffset = 0;
+                    const circumference = 2 * Math.PI * 40; // 251.2
+                    
+                    return sortedCategories.map((cat, idx) => {
+                      const percentage = cat.total / totalSpent;
+                      const strokeDasharray = `${percentage * circumference} ${circumference}`;
+                      const strokeDashoffset = -currentOffset;
+                      currentOffset += percentage * circumference;
+                      
+                      return (
+                        <circle 
+                          key={idx}
+                          className="transition-all hover:stroke-[20px] cursor-pointer" 
+                          cx="50" 
+                          cy="50" 
+                          fill="transparent" 
+                          r="40" 
+                          stroke={cat.color} 
+                          strokeDasharray={strokeDasharray} 
+                          strokeDashoffset={strokeDashoffset} 
+                          strokeWidth="16"
+                        />
+                      )
+                    })
+                  })()}
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
                   <span className="text-sm text-gray-500 font-medium">Total</span>
-                  <span className="text-xl font-bold text-navy">â‚¹42.3k</span>
+                  <span className="text-xl font-bold text-navy">{totalSpent > 1000 ? `₹${(totalSpent/1000).toFixed(1)}k` : `₹${totalSpent}`}</span>
                 </div>
               </div>
+              
               {/* Legend */}
               <div className="flex-1 grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-brand"></div>
-                  <span className="text-sm font-medium text-navy">Food & Dining</span>
-                  <span className="ml-auto font-medium text-sm text-gray-500">29%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#E8593C'}}></div>
-                  <span className="text-sm font-medium text-navy">Shopping</span>
-                  <span className="ml-auto font-medium text-sm text-gray-500">23%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#15803D'}}></div>
-                  <span className="text-sm font-medium text-navy">Transport</span>
-                  <span className="ml-auto font-medium text-sm text-gray-500">15%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#D97706'}}></div>
-                  <span className="text-sm font-medium text-navy">Bills & Utils</span>
-                  <span className="ml-auto font-medium text-sm text-gray-500">33%</span>
-                </div>
+                {sortedCategories.slice(0,6).map((cat, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: cat.color}}></div>
+                    <span className="text-sm font-medium text-navy truncate" title={cat.name}>{cat.name}</span>
+                    <span className="ml-auto font-medium text-sm text-gray-500">
+                      {Math.round((cat.total / totalSpent) * 100)}%
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+          
           {/* Recent Transactions */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border">
             <div className="flex justify-between items-center mb-6">
@@ -114,43 +223,28 @@ export default function DashboardPage() {
               <button className="text-brand text-sm font-semibold hover:underline">View All</button>
             </div>
             <div className="space-y-2">
-              {/* Transaction Rows */}
-              <div className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                    <Utensils className="w-5 h-5" />
+              {recentTransactions?.map(txn => (
+                <div key={txn.id} className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
+                  <div className="flex items-center gap-4">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-sm"
+                      style={{ backgroundColor: txn.categories?.color as string || '#E8593C' }}
+                    >
+                      {getCategoryIcon(txn.categories?.icon as string || '')}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-navy">{txn.merchant}</p>
+                      <p className="text-sm text-gray-500">{txn.categories?.name} &bull; {new Date(txn.date).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-navy">Swiggy</p>
-                    <p className="text-sm text-gray-500">Food & Dining â€¢ Today</p>
-                  </div>
+                  <span className={`font-bold ${txn.type === 'credit' ? 'text-green-600' : 'text-navy'}`}>
+                    {txn.type === 'credit' ? '+' : '-'}{formatCurrency(txn.amount)}
+                  </span>
                 </div>
-                <span className="font-bold text-navy">-â‚¹850</span>
-              </div>
-              <div className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                    <ShoppingBag className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-navy">Amazon</p>
-                    <p className="text-sm text-gray-500">Shopping â€¢ Yesterday</p>
-                  </div>
-                </div>
-                <span className="font-bold text-navy">-â‚¹2,499</span>
-              </div>
-              <div className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                    <Banknote className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-navy">Salary</p>
-                    <p className="text-sm text-gray-500">Income â€¢ May 1</p>
-                  </div>
-                </div>
-                <span className="font-bold text-green-600">+â‚¹70,000</span>
-              </div>
+              ))}
+              {(!recentTransactions || recentTransactions.length === 0) && (
+                <p className="text-gray-500 text-sm text-center py-4">No recent transactions.</p>
+              )}
             </div>
           </div>
         </div>
@@ -165,7 +259,7 @@ export default function DashboardPage() {
               <div>
                 <h3 className="text-lg font-bold mb-2">TraceMoney Insight</h3>
                 <p className="text-brand-light text-sm leading-relaxed mb-5">
-                  You've spent 40% more on Food & Dining this month compared to your usual average. Consider reviewing your active subscriptions to offset this, as you have 2 unused services this month.
+                  {insightText}
                 </p>
                 <button className="bg-white text-brand px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-cream transition-colors shadow-sm">
                   Review Budget
@@ -178,33 +272,34 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border">
             <h3 className="text-xl font-bold text-navy mb-6">Budget progress</h3>
             <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="font-semibold text-navy">Food & Dining</p>
-                  <p className="text-sm text-gray-500"><span className="text-brand font-bold">83%</span> of â‚¹15,000</p>
-                </div>
-                <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
-                  <div className="h-full bg-brand rounded-full" style={{ width: '83%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="font-semibold text-navy">Shopping</p>
-                  <p className="text-sm text-gray-500"><span className="text-red-500 font-bold">105%</span> of â‚¹8,000</p>
-                </div>
-                <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
-                  <div className="h-full bg-red-500 rounded-full" style={{ width: '100%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="font-semibold text-navy">Transport</p>
-                  <p className="text-sm text-gray-500"><span className="text-green-600 font-bold">84%</span> of â‚¹5,000</p>
-                </div>
-                <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
-                  <div className="h-full bg-green-600 rounded-full" style={{ width: '84%' }}></div>
-                </div>
-              </div>
+              {budgets?.map(budget => {
+                const catSpent = categoryTotals[budget.category_id]?.total || 0;
+                const percentage = Math.round((catSpent / budget.amount) * 100);
+                const isOver = percentage > 100;
+                
+                return (
+                  <div key={budget.id}>
+                    <div className="flex justify-between items-end mb-2">
+                      <p className="font-semibold text-navy">{budget.categories?.name}</p>
+                      <p className="text-sm text-gray-500">
+                        <span className={`font-bold ${isOver ? 'text-red-500' : 'text-brand'}`}>{percentage}%</span> of {formatCurrency(budget.amount)}
+                      </p>
+                    </div>
+                    <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all" 
+                        style={{ 
+                          width: `${Math.min(percentage, 100)}%`,
+                          backgroundColor: isOver ? '#ef4444' : (budget.categories?.color as string || '#2563eb')
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                )
+              })}
+              {(!budgets || budgets.length === 0) && (
+                <p className="text-gray-500 text-sm text-center py-4">No active budgets for this month.</p>
+              )}
             </div>
           </div>
         </div>

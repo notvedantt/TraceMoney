@@ -11,8 +11,10 @@ import {
   Wallet,
   MessageCircle,
   User,
-  Bell
+  Bell,
+  LogOut
 } from 'lucide-react'
+import { signout } from '@/app/login/actions'
 
 export default function DashboardLayout({
   children,
@@ -68,11 +70,17 @@ export default function DashboardLayout({
           })}
         </div>
 
-        <div className="mt-auto">
+        <div className="mt-auto flex flex-col gap-2">
           <button className="w-full flex items-center gap-3 px-4 py-3 text-navy-muted hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 active:scale-95">
             <User className="w-5 h-5" />
-            Arjun Kumar
+            Profile Settings
           </button>
+          <form action={signout}>
+            <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 active:scale-95">
+              <LogOut className="w-5 h-5" />
+              Sign Out
+            </button>
+          </form>
         </div>
       </nav>
 

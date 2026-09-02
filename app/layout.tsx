@@ -8,7 +8,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'TraceMoney â€” AI-Powered Personal Finance',
+  title: 'TraceMoney — AI-Powered Personal Finance',
   description: 'Every rupee, finally explained. TraceMoney connects all your UPI apps, cards and wallets.',
 }
 

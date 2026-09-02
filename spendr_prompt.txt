@@ -1,0 +1,255 @@
+You are building Spendr — an AI-powered personal finance tracker for Indian users that aggregates spending across UPI apps, cards, wallets, and subscriptions into a single plain-language dashboard.
+
+---
+
+## Design System
+
+Replicate Razorpay's colour scheme exactly:
+- Primary background: #0D1117 (near black)
+- Surface / card background: #161B22
+- Border colour: #21262D
+- Primary accent: #2563EB (Razorpay blue)
+- Accent hover: #1D4ED8
+- Success green: #16A34A
+- Warning amber: #D97706
+- Danger red: #DC2626
+- Primary text: #F0F6FC
+- Secondary text: #8B949E
+- Muted text: #484F58
+- Font: Inter (import from Google Fonts)
+
+All cards have: background #161B22, border 1px solid #21262D, border-radius 12px, padding 24px.
+Buttons: background #2563EB, color white, border-radius 8px, font-weight 500.
+Use subtle blue glow on hover: box-shadow 0 0 0 3px rgba(37,99,235,0.3).
+Charts: use Recharts. Bar/line colour #2563EB, secondary #16A34A, tertiary #D97706.
+
+---
+
+## Tech Stack
+
+- Next.js 14 (app router)
+- Tailwind CSS
+- Recharts for all charts
+- Supabase (already set up — import createClient from @/lib/supabase)
+- Claude API for AI features (import from @/lib/claude)
+- Lucide React for icons
+
+---
+
+## Supabase Schema (already exists — reference only)
+
+Tables:
+- profiles (id, full_name, phone, avatar_url)
+- categories (id, name, icon, color) — seeded with 12 categories
+- payment_sources (id, user_id, name, type, last_four)
+- transactions (id, user_id, amount, type, category_id, merchant, raw_description, note, date, is_recurring, ai_categorised)
+- budgets (id, user_id, category_id, amount, month)
+- insights (id, user_id, month, content, type)
+- whatsapp_sessions, whatsapp_messages
+
+---
+
+## Pages to Build
+
+---
+
+### 1. Landing Page — `/`
+
+A dark, premium marketing page in the Razorpay style.
+
+Sections in order:
+
+**Navbar**
+- Left: "Spendr" logo in white, bold
+- Right: "Sign in" (ghost button) + "Try Demo" (primary blue button)
+- Sticky, blur backdrop
+
+**Hero**
+- Large headline (56px, bold): "Every rupee, finally explained."
+- Subline (20px, muted): "Spendr connects all your UPI apps, cards and wallets — and shows you exactly where your money went, in plain language."
+- Two buttons: "Try the demo →" (primary blue) and "See how it works" (ghost)
+- Below buttons: "No bank credentials. RBI AA Framework. Free to try."
+- Background: dark with a faint blue radial gradient behind the headline
+
+**Problem Section**
+- Heading: "Sound familiar?"
+- 3 cards in a row, each with an icon, short bold title, one sentence description:
+  - 🔀 "Scattered across 6 apps" — "GPay, PhonePe, Paytm, cards, wallets — no single view."
+  - 😵 "No plain language" — "Raw transaction codes like UPI/SWIGGY*388389 tell you nothing."
+  - 😬 "You check too late" — "By the time you notice overspending, the month is already gone."
+
+**Product Screenshot**
+- Heading: "One dashboard for all your money"
+- Show a large dark mockup card (simulate a dashboard screenshot using HTML/CSS — a mini version of the actual dashboard with fake data bars and numbers)
+- Blue label badge above: "AI-powered"
+
+**Features**
+- 4 features in a 2x2 grid:
+  - ⚡ Unified view — "Every transaction from every source in one feed."
+  - 🤖 AI categorisation — "Claude reads your raw transaction data and labels it in plain English."
+  - 💬 Ask anything — "Type 'how much did I spend on food?' in WhatsApp or the dashboard chat."
+  - 🔁 Subscription tracker — "See all your recurring charges and exactly how much they add up to."
+
+**How It Works**
+- 3 numbered steps in a horizontal row:
+  1. "Connect your accounts" — via RBI Account Aggregator consent
+  2. "We categorise everything" — AI reads and labels every transaction
+  3. "Ask anything" — plain language answers on dashboard or WhatsApp
+
+**Security Trust Bar**
+- Dark card spanning full width with 3 items separated by dividers:
+  - 🔒 RBI AA Framework
+  - 🚫 No bank credentials stored
+  - ✅ Consent-based data access
+
+**CTA Footer**
+- "Ready to see where your money goes?"
+- Big primary button: "Try the demo →"
+- Muted text below: "Takes 30 seconds. No credit card."
+
+---
+
+### 2. Dashboard Page — `/dashboard`
+
+The main home screen. Data is fetched from Supabase for the logged-in user (use demo user ID in development).
+
+**Top navbar**
+- Left: "Spendr" logo
+- Centre: month selector (prev/next arrows, shows "May 2026")
+- Right: notification bell icon + user avatar with dropdown (Profile, Settings, Sign out)
+
+**Summary cards row (4 cards)**
+- Total Spent this month — big number in white, subtitle "this month", red down arrow if higher than last month
+- Total Income — green, shows salary credit total
+- Top Category — shows category name + icon + amount
+- Savings Rate — percentage of income not spent, colour coded green/amber/red
+
+**Main grid (2 columns)**
+
+Left column (60% width):
+- Spending by Category — donut chart (Recharts) with legend. Each segment coloured per category colour from DB.
+- Recent Transactions — last 10 transactions as a list. Each row: category icon + merchant name + date on left, amount (red for debit, green for credit) on right. Clicking opens a slide-over panel to edit category or add a note.
+
+Right column (40% width):
+- AI Insight Card — blue-bordered card with a sparkle icon. Shows a 2-3 sentence AI-generated insight for the month (fetched from insights table or generated on load via Claude API). Example: "You spent ₹4,200 more on food this month than last, mostly on weekends. Your subscription spend is ₹2,391/month across 5 services."
+- Subscription Summary — list of all is_recurring=true transactions grouped by merchant. Shows name, amount, next expected date.
+- Budget Progress — 3-4 category budget bars showing spent vs limit. Green under 60%, amber 60-85%, red over 85%.
+
+---
+
+### 3. Transactions Page — `/dashboard/transactions`
+
+Full ledger of all transactions.
+
+**Filter bar (sticky)**
+- Search input: "Search merchant, note..."
+- Dropdown filters: Category (all categories from DB), Type (All / Debit / Credit), Source (All payment sources), Date range picker
+- Active filter chips with X to remove
+
+**Transaction table**
+- Columns: Date | Merchant | Category (badge with colour) | Payment Source | Amount | Actions
+- Sortable by date and amount
+- Debit amounts in red, credit in green
+- Row hover shows edit icon
+- Click row → slide-over panel with:
+  - Merchant name + raw description (muted, smaller)
+  - Category dropdown to change
+  - Note text field
+  - Save button
+
+**Pagination** — 25 rows per page, prev/next controls
+
+**Export button** — top right, downloads filtered transactions as CSV
+
+---
+
+### 4. Analytics Page — `/dashboard/analytics`
+
+Deeper spending intelligence.
+
+**Month over month bar chart**
+- Grouped bar chart (Recharts) — last 3 months side by side per category
+- Toggle between "by category" and "by payment source"
+
+**Spending heatmap**
+- 7 columns (Mon–Sun) × ~13 rows (weeks in 90 days)
+- Each cell coloured by spend intensity — light blue low, deep blue high
+- Hover tooltip shows date + total spent
+
+**Subscription Tracker section**
+- Card listing all recurring transactions
+- Shows: merchant, amount, frequency, last charged, next expected
+- Total monthly subscription burn shown prominently at top
+
+**Category deep dive**
+- Dropdown to select a category
+- On select: shows line chart of that category spend per week, top 5 merchants in that category, average spend per transaction
+
+---
+
+### 5. Budgets Page — `/dashboard/budgets`
+
+Set and track monthly spending limits.
+
+**Header**
+- "Month: May 2026" + edit button to change month
+- Total budget vs total spent summary
+
+**Budget cards grid**
+- One card per category that has a budget set
+- Shows: category icon + name, progress bar (green → amber → red), "₹X spent of ₹Y limit", days remaining in month
+- Edit button on each card to change the limit
+- Over-budget cards show a red warning banner
+
+**Add budget button**
+- Opens a modal: select category, enter monthly limit, save
+
+---
+
+### 6. Ask Spendr Page — `/dashboard/ask`
+
+AI chat interface — same functionality as the WhatsApp bot but inside the dashboard.
+
+**Layout**
+- Full height chat interface
+- Messages bubble left (user) and right (Spendr) style
+- Spendr messages have a small sparkle/AI icon
+
+**Input bar (bottom, sticky)**
+- Text input: "Ask anything about your spending..."
+- Send button (blue)
+- Below input: 4 suggestion chips the user can tap:
+  - "Where did my money go this month?"
+  - "What are my subscriptions?"
+  - "How does this month compare to last?"
+  - "What's my biggest expense category?"
+
+**AI behaviour**
+- On send: call Claude API (POST /api/ask) with the user's message + last 3 months of transaction summary as context
+- Stream the response back token by token
+- Claude should answer in plain conversational Hindi-English (Hinglish is fine) with actual rupee figures from the data
+- Show a typing indicator while streaming
+
+**API route to build: `/api/ask`**
+- Receives: { message: string, userId: string }
+- Fetches last 90 days of transactions from Supabase for that user
+- Builds a context string summarising spend by category, top merchants, subscriptions, month totals
+- Sends to Claude API: system prompt = "You are Spendr, a friendly Indian personal finance assistant. Answer questions about the user's spending in plain language using the data provided. Use ₹ for amounts. Be concise, friendly, and conversational. Hinglish is welcome."
+- Streams response back to client
+
+---
+
+## Additional Implementation Notes
+
+- Use Next.js app router. All dashboard pages are under `/dashboard` and protected by a layout that checks Supabase auth session.
+- For development/demo mode: if no auth session exists, auto-load the demo user (hardcoded UUID) so the app works without login during showcase.
+- All Supabase queries should use the user's ID from session (or demo UUID).
+- The `/api/ask` route uses the Anthropic SDK. Model: claude-sonnet-4-20250514. Max tokens: 1000. Stream: true.
+- Mobile responsive — dashboard collapses to single column below 768px. Bottom nav bar on mobile with 5 icons.
+- All loading states: skeleton loaders (dark grey animated pulse) not spinners.
+- Empty states: friendly message + icon if no transactions found.
+- Toasts for success/error actions (save note, update category, export CSV).
+
+---
+
+Build this completely. Start with the layout, then landing page, then dashboard pages in order. Use real Supabase queries (not hardcoded data) everywhere except the demo mode fallback.
