@@ -14,8 +14,11 @@ import {
   Plane,
   Book,
   Send,
-  Package
+  Package,
+  Info
 } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 // Helper to map category emoji to Lucide icon
 function getCategoryIcon(iconStr: string, className: string = "w-5 h-5") {
@@ -67,7 +70,7 @@ export default async function DashboardPage() {
   currentMonthTxns?.forEach(t => {
     if (t.type === 'debit') {
       totalSpent += Number(t.amount)
-      
+
       // Calculate category breakdown
       if (t.categories) {
         if (!categoryTotals[t.category_id]) {
@@ -92,7 +95,7 @@ export default async function DashboardPage() {
     .select('id, amount, type, merchant, date, categories(name, color, icon)')
     .eq('user_id', user.id)
     .order('date', { ascending: false })
-    .limit(4)
+    .limit(8)
 
   // 3. Fetch Budgets
   const { data: budgets } = await supabase
@@ -167,28 +170,28 @@ export default async function DashboardPage() {
               <div className="relative w-48 h-48 flex-shrink-0">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" fill="transparent" r="40" stroke="#F0EDE8" strokeWidth="16"></circle>
-                  
+
                   {sortedCategories.length > 0 && (() => {
                     let currentOffset = 0;
                     const circumference = 2 * Math.PI * 40; // 251.2
-                    
+
                     return sortedCategories.map((cat, idx) => {
                       const percentage = cat.total / totalSpent;
                       const strokeDasharray = `${percentage * circumference} ${circumference}`;
                       const strokeDashoffset = -currentOffset;
                       currentOffset += percentage * circumference;
-                      
+
                       return (
-                        <circle 
+                        <circle
                           key={idx}
-                          className="transition-all hover:stroke-[20px] cursor-pointer" 
-                          cx="50" 
-                          cy="50" 
-                          fill="transparent" 
-                          r="40" 
-                          stroke={cat.color} 
-                          strokeDasharray={strokeDasharray} 
-                          strokeDashoffset={strokeDashoffset} 
+                          className="transition-all hover:stroke-[20px] cursor-pointer"
+                          cx="50"
+                          cy="50"
+                          fill="transparent"
+                          r="40"
+                          stroke={cat.color}
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={strokeDashoffset}
                           strokeWidth="16"
                         />
                       )
@@ -197,15 +200,15 @@ export default async function DashboardPage() {
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
                   <span className="text-sm text-gray-500 font-medium">Total</span>
-                  <span className="text-xl font-bold text-navy">{totalSpent > 1000 ? `₹${(totalSpent/1000).toFixed(1)}k` : `₹${totalSpent}`}</span>
+                  <span className="text-xl font-bold text-navy">{totalSpent > 1000 ? `₹${(totalSpent / 1000).toFixed(1)}k` : `₹${totalSpent}`}</span>
                 </div>
               </div>
-              
+
               {/* Legend */}
               <div className="flex-1 grid grid-cols-2 gap-4">
-                {sortedCategories.slice(0,6).map((cat, idx) => (
+                {sortedCategories.slice(0, 6).map((cat, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: cat.color}}></div>
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
                     <span className="text-sm font-medium text-navy truncate" title={cat.name}>{cat.name}</span>
                     <span className="ml-auto font-medium text-sm text-gray-500">
                       {Math.round((cat.total / totalSpent) * 100)}%
@@ -215,7 +218,7 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Recent Transactions */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border">
             <div className="flex justify-between items-center mb-6">
@@ -226,7 +229,7 @@ export default async function DashboardPage() {
               {recentTransactions?.map(txn => (
                 <div key={txn.id} className="flex items-center justify-between p-3 hover:bg-cream rounded-xl transition-colors cursor-pointer border-b border-cream-border last:border-0">
                   <div className="flex items-center gap-4">
-                    <div 
+                    <div
                       className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-sm"
                       style={{ backgroundColor: txn.categories?.color as string || '#E8593C' }}
                     >
@@ -252,22 +255,17 @@ export default async function DashboardPage() {
         {/* Right Column (40%) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           {/* AI Insight Card */}
-          <div className="bg-brand rounded-2xl p-6 shadow-lg shadow-brand/20 text-white relative overflow-hidden">
-            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
-            <div className="flex items-start gap-4 relative z-10">
-              <Sparkles className="w-6 h-6 text-yellow-300 flex-shrink-0 mt-1" />
+          <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-brand border border-cream-border">
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-lg font-bold mb-2">TraceMoney Insight</h3>
-                <p className="text-brand-light text-sm leading-relaxed mb-5">
-                  {insightText}
-                </p>
-                <button className="bg-white text-brand px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-cream transition-colors shadow-sm">
-                  Review Budget
-                </button>
+                <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-2">TraceMoney Insight</p>
+                <p className="text-navy text-sm leading-relaxed">{insightText}</p>
+                <p className="text-xs text-gray-400 mt-3">Generated by Gemini</p>
               </div>
             </div>
           </div>
-          
+
           {/* Budget Progress */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-border">
             <h3 className="text-xl font-bold text-navy mb-6">Budget progress</h3>
@@ -276,7 +274,7 @@ export default async function DashboardPage() {
                 const catSpent = categoryTotals[budget.category_id]?.total || 0;
                 const percentage = Math.round((catSpent / budget.amount) * 100);
                 const isOver = percentage > 100;
-                
+
                 return (
                   <div key={budget.id}>
                     <div className="flex justify-between items-end mb-2">
@@ -286,11 +284,11 @@ export default async function DashboardPage() {
                       </p>
                     </div>
                     <div className="w-full h-2.5 bg-cream rounded-full overflow-hidden">
-                      <div 
-                        className="h-full rounded-full transition-all" 
-                        style={{ 
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
                           width: `${Math.min(percentage, 100)}%`,
-                          backgroundColor: isOver ? '#ef4444' : (budget.categories?.color as string || '#2563eb')
+                          backgroundColor: isOver ? '#DC2626' : percentage >= 85 ? '#D97706' : '#15803D'
                         }}
                       ></div>
                     </div>
